@@ -10,30 +10,29 @@
 // lcd pin 5 (R/W) -> ground
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
-long int i=0;
-int count=1;
+long int i = 0;
+int  count = 1;
 
 void setup() {
-  pinMode(13, OUTPUT);
+  pinMode(12, INPUT);
 }
+
 void loop() {
-  /*
-  if (digitalRead(13)==LOW) {
+  // on button press JC1 goes low
+  // JC1 is connected to pin 12
+
+  // toggle count boolean
+  if (digitalRead(12) == LOW) {
     count = 0;
   } else {
     count = 1;
   }
-  */
-  if (i % 10 == 0) {
-    digitalWrite(13,HIGH);
-  } else {
-    digitalWrite(13,LOW);
-  }
   
-  lcd.setCursor(0,0);
+  // print out value of i
+  lcd.setCursor(0, 0);
   lcd.print(i);
-  delay(100);
   if (count) {
     i += 1;
   }
+  
 }
