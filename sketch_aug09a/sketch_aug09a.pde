@@ -18,34 +18,29 @@ int buttonVal = 0;
 
 void setup() {
   Serial.begin(9600);
+
+  // on button press JC1 goes low
+  // JC1 is connected to pin 2
   pinMode(2, INPUT);
-  attachInterrupt(0, changeCount, FALLING);
+  
+  // interrupt attached to pin 2 (interrupt 0)
+  attachInterrupt(0, changeCount, CHANGE);
 }
 
 void changeCount() {
-  //delay(10);
-  buttonVal = digitalRead(2);
-  if  (buttonVal == HIGH) Serial.print("high\n");
-  if (buttonVal == LOW) {
-    Serial.print("low\n");
-    count = !count;  
-  }
-  //delay(10);
-}
-void loop() {
-  // on button press JC1 goes low
-  // JC1 is connected to pin 12
-
-  // toggle count boolean
+  static unsigned long lastInterruptTime = 0;
+  unsigned long interruptTime = millis();
   
-  // print out value of i
+  if (interruptTime - lastInterruptTime > 50) {
+    if (digitalRead(2) == LOW) {
+    count = !count;  
+    }
+  }
+  lastInterruptTime = interruptTime;
+}
+
+void loop() {
   lcd.setCursor(0, 0);
   lcd.print(i);
-  delay(100);
-  if (count) {
-    i += 1;
-    Serial.print(i,DEC);
-    Serial.print("\n");
-  }
-  
+  if (count) i += 1; else i-=1;
 }
