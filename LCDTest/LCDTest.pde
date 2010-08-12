@@ -25,6 +25,15 @@ void setup() {
   
   // interrupt attached to pin 2 (interrupt 0)
   attachInterrupt(0, changeCount, CHANGE);
+  
+  // Setup 1 Hz timer to refresh display using 16 Timer 1
+  // CTC mode (interrupt after timer reaches OCR1A)
+  TCCR1A = 0;                           
+  // CTC & clock div 1024
+  TCCR1B = _BV(WGM12) | _BV(CS10) | _BV(CS12);    
+  //OCR1A = 15609;                                 // 16mhz / 1024 / 15609 = 1 Hz
+  OCR1A = 1561;
+  TIMSK1 = _BV(OCIE1A);                          // turn on interrupt
 }
 
 void changeCount() {
@@ -39,8 +48,12 @@ void changeCount() {
   lastInterruptTime = interruptTime;
 }
 
-void loop() {
+ISR(TIMER1_COMPA_vect) {
+  if (count) i += 1; else i-=1; 
   lcd.setCursor(0, 0);
   lcd.print(i);
-  if (count) i += 1; else i-=1;
+}
+
+void loop() {
+  //if (count) i += 1; else i-=1;
 }
