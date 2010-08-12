@@ -19,8 +19,8 @@
  http://www.arduino.cc/en/Tutorial/MIDI
  
  */
-const int kickPin = 11;  // The switch is on Arduino pin 10
-const int snarePin = 10;
+const int kickPin = 10;  // The switch is on Arduino pin 10
+const int snarePin = 11;
 const int LEDpin = 13;     //  Indicator LED
 const int debounceTime = 50;
 // Variables: 
