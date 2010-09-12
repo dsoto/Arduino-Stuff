@@ -28,13 +28,17 @@ int i = 0;
 DeviceAddress insideThermometer;
 
 void setup(void) {
+    // serial stuff
     Serial.begin(115200);
+    // lcd stuff
     lcd.createChar(0, degreeGlyph);
     lcd.begin(16,2);
+    // I2C stuff
     Wire.begin();
+    // real time clock stuff
     RTC.begin();
     RTC.adjust(DateTime(__DATE__, __TIME__));
-    
+    // temp sensor stuff
     sensors.begin();
     sensors.getAddress(insideThermometer, 0);
     sensors.setResolution(insideThermometer, 9);
@@ -42,60 +46,51 @@ void setup(void) {
 
 void printTemperature(DeviceAddress deviceAddress) {
     float tempC = sensors.getTempC(deviceAddress);
+    // increment index on boxcar
     i++;
-    if (i == nBoxcar) i = 0; 
+    if (i == nBoxcar) i = 0;
     boxcarCelsius[i] = tempC;
+    // average over boxcar array
     tempC = 0;
     for (int j = 0; j < nBoxcar; j++) {
         tempC += boxcarCelsius[j] / nBoxcar;
     }
+    // print to lcd
     lcd.setCursor(1, 0);
-    lcdPrintDouble(tempC, 1);
+    lcdPrintTemp(tempC);
     lcd.write(0);
     lcd.print("C  ");
-    lcdPrintDouble(DallasTemperature::toFahrenheit(tempC), 1);
+    lcdPrintTemp(DallasTemperature::toFahrenheit(tempC));
     lcd.write(0);
     lcd.print("F");
 }
 
-void printDate() {
+void lcdPrintDate() {
     lcd.setCursor(2,1);
     DateTime now = RTC.now();
-    lcdPrintPadded(now.month(), 2);
+    lcdPrintPadded(now.month());
     lcd.print("/");
-    lcdPrintPadded(now.day(), 2);
+    lcdPrintPadded(now.day());
     lcd.print("  ");
-    lcdPrintPadded(now.hour(), 2);
+    lcdPrintPadded(now.hour());
     lcd.print(":");
-    lcdPrintPadded(now.minute(), 2);
+    lcdPrintPadded(now.minute());
 }
 
-void lcdPrintDouble( double val, byte precision) {
-    if(val < 0.0) {
-        lcd.print('-');
-        val = -val;
-    }
-    
-    lcd.print (int(val));  //prints the int part
-    if( precision > 0) {
-        lcd.print("."); // print the decimal point
-        unsigned long frac;
-        unsigned long mult = 1;
-        byte padding = precision - 1;
-        while (precision--) mult *= 10;
-        
-        if(val >= 0)
-            frac = (val - int(val)) * mult;
-        else
-            frac = (int(val) - val) * mult;
-        unsigned long frac1 = frac;
-        while (frac1 /= 10) padding--;
-        while (padding--) lcd.print("0");
-        lcd.print(frac, DEC) ;
-    }
+// prints double with 1 decimal place
+void lcdPrintTemp(double val) {
+    // print integer part
+    lcd.print(int(val));
+    lcd.print(".");
+    // subtract off integer
+    val = val - int(val);
+    // multiply by ten, truncate, and print
+    val = val * 10;
+    lcd.print(int(val));
 }
 
-void lcdPrintPadded(int val, int digits) {
+// prints integer with leading zero if necessary
+void lcdPrintPadded(int val) {
     if (val <= 9) lcd.print("0");
     lcd.print(val,DEC);
 }
@@ -103,6 +98,6 @@ void lcdPrintPadded(int val, int digits) {
 void loop(void) {
   sensors.requestTemperatures();
   printTemperature(insideThermometer);
-  printDate();
+  lcdPrintDate();
   delay(1000);
 }
