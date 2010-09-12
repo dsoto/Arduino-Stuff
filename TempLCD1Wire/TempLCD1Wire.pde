@@ -25,7 +25,7 @@ float boxcarCelsius[nBoxcar];
 int i = 0;
 
 // array/object to hold device address
-DeviceAddress insideThermometer;
+//DeviceAddress insideThermometer;
 
 void setup(void) {
     // serial stuff
@@ -40,12 +40,13 @@ void setup(void) {
     RTC.adjust(DateTime(__DATE__, __TIME__));
     // temp sensor stuff
     sensors.begin();
-    sensors.getAddress(insideThermometer, 0);
-    sensors.setResolution(insideThermometer, 9);
+//    sensors.getAddress(insideThermometer, 0);
+//    sensors.setResolution(insideThermometer, 9);
 }
 
-void printTemperature(DeviceAddress deviceAddress) {
-    float tempC = sensors.getTempC(deviceAddress);
+void printTemperature() {
+    sensors.requestTemperatures();
+    float tempC = sensors.getTempCByIndex(0);
     // increment index on boxcar
     i++;
     if (i == nBoxcar) i = 0;
@@ -96,8 +97,7 @@ void lcdPrintPadded(int val) {
 }
 
 void loop(void) {
-  sensors.requestTemperatures();
-  printTemperature(insideThermometer);
-  lcdPrintDate();
-  delay(1000);
+    printTemperature();
+    lcdPrintDate();
+    delay(1000);
 }
