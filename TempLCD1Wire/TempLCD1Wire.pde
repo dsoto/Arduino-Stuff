@@ -1,11 +1,14 @@
 #include <LiquidCrystal.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
+#include "RTClib.h"
 
 #define ONE_WIRE_BUS 9
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 LiquidCrystal lcd(8, 7, 6, 5, 4, 3);
+RTC_DS1307 RTC;
 
 byte degreeGlyph[8] = {
   B01100,
@@ -24,6 +27,9 @@ DeviceAddress insideThermometer;
 void setup(void) {
   lcd.createChar(0, degreeGlyph);
   lcd.begin(16,2);
+  Wire.begin();
+  RTC.begin();
+
   sensors.begin();
   sensors.getAddress(insideThermometer, 0);
   sensors.setResolution(insideThermometer, 9);
@@ -67,7 +73,21 @@ void lcdPrintDouble( double val, byte precision) {
 }
 
 void loop(void) { 
+  //lcd.clear();
   sensors.requestTemperatures(); // Send the command to get temperatures
   printTemperature(insideThermometer); // Use a simple function to print out the data
+  delay(500);
+  lcd.setCursor(1,1);
+  DateTime now = RTC.now();
+    
+  lcd.print(now.month(), DEC);
+  lcd.print("/");
+  lcd.print(now.day(), DEC);
+  lcd.print("  ");
+  lcd.print(now.hour(), DEC);
+  lcd.print(":");
+  lcd.print(now.minute(), DEC);
+  lcd.print(":");
+  lcd.print(now.second(), DEC);
 }
 
