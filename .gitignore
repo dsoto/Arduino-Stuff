@@ -3,3 +3,6 @@
 *.hex
 applet
 libraries
+*.*~
+*.png
+*.CSV
