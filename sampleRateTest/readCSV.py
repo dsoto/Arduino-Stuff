@@ -1,7 +1,8 @@
 import serial
 
 #s = open('SD analog read.CSV','r')
-s = open('SD digital read.CSV','r')
+#s = open('SD digital read.CSV','r')
+s = open('data.CSV','r')
 lines = s.readlines()
 
 samples = []
@@ -22,8 +23,10 @@ import matplotlib.pyplot as plt
 
 plt.close()
 plt.plot(samples,label='data')
-plt.plot([0,100],[0,100*1000],label='1 kHz')
-plt.plot([0,100],[0,100*10000],label='100 Hz')
+#plt.plot([0,100],[0,100*1000],label='1 kHz')
+#plt.plot([0,100],[0,100*10000],label='100 Hz')
+plt.plot([0,100],[0,100*100],label='10 kHz')
+plt.plot([0,100],[0,100*10],label='100 kHz')
 plt.xlabel('sample number')
 plt.ylabel('time (usec)')
 plt.legend()
