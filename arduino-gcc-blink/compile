@@ -31,4 +31,6 @@ avr-gcc -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -mmcu=a
 avr-gcc -Os -Wl,--gc-sections -mmcu=atmega328p -o build/blink.elf build/blink.o build/core.a -Lbuild -lm
 avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 build/blink.elf build/blink.eep
 avr-objcopy -O ihex -R .eeprom build/blink.elf build/blink.hex
-#avrdude -C/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/etc/avrdude.conf -patmega328p -cstk500v1 -P/dev/tty.usbserial-A9007VFt -b57600 -D -Uflash:w:build/Blink.cpp.hex:i
+
+# flash the chip
+avrdude -patmega328p -cusbtiny -Uflash:w:build/blink.hex
