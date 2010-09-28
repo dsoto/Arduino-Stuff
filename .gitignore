@@ -1,4 +1,7 @@
 *.o
+*.out
+*.elf
+*.eep
 *.a
 *.hex
 applet
@@ -6,3 +9,4 @@ libraries
 *.*~
 *.png
 *.CSV
+cruft
