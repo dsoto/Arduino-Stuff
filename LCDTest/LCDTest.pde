@@ -10,7 +10,8 @@
 // lcd pin 5 (R/W) -> ground
 
 //LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
-LiquidCrystal lcd(8, 7, 6, 5, 4, 3);
+//LiquidCrystal lcd(8, 7, 6, 5, 4, 3);
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 long int i = 0;
 volatile int count = HIGH;
