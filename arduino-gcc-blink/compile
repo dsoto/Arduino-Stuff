@@ -1,4 +1,11 @@
 # this is all library object code stuff
+# -c assemble but do not link
+# -g include debug stuff
+# -Os optimize for size
+# -w inhibit all warning messages
+# -ffunction-sections and -fdata-sections are for optimization of code location
+# -I adds directory to the head of the list to be searched for header files
+# -o place the output in file
 avr-gcc -c -g -Os -w -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=20 -Iarduino arduino/pins_arduino.c -obuild/pins_arduino.c.o
 avr-gcc -c -g -Os -w -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=20 -Iarduino arduino/WInterrupts.c -obuild/WInterrupts.c.o
 avr-gcc -c -g -Os -w -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=20 -Iarduino arduino/wiring.c -obuild/wiring.c.o
@@ -27,10 +34,14 @@ avr-ar rcs build/core.a build/WMath.cpp.o
 avr-ar rcs build/core.a build/WString.cpp.o
 
 # now for my code
+# -L is where to look for the libraries specified by -l
+# -l search this library when linking
 avr-gcc -c -g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=20 -Iarduino blink.c -obuild/blink.o
-avr-gcc -Os -Wl,--gc-sections -mmcu=atmega328p -o build/blink.elf build/blink.o build/core.a -Lbuild -lm
+# it doesn't look like we need the -L and -l options in this case
+#avr-gcc -Os -Wl,--gc-sections -mmcu=atmega328p -o build/blink.elf build/blink.o build/core.a -Lbuild -lm
+avr-gcc -Os -Wl,--gc-sections -mmcu=atmega328p -o build/blink.elf build/blink.o build/core.a
 avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 build/blink.elf build/blink.eep
 avr-objcopy -O ihex -R .eeprom build/blink.elf build/blink.hex
 
 # flash the chip
-avrdude -patmega328p -cusbtiny -Uflash:w:build/blink.hex
+#avrdude -patmega328p -cusbtiny -Uflash:w:build/blink.hex
