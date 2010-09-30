@@ -14,11 +14,11 @@ int main (void)
 		PORTB = 0b11110111;
 //		PORTC = 0b11111111;
 //		PORTD = 0b11111111;
-        _delay_ms(500);
+        _delay_ms(50);
 		PORTB = 0b00001000;
 //		PORTC = 0b00000011;
 //		PORTD = 0b00000000;
-        _delay_ms(500);
+        _delay_ms(50);
     }
     return(0);
 }
