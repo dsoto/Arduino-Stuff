@@ -1,3 +1,5 @@
+//#define F_CPU 1200000UL
+// this clock speed is the 9.6MHz divided by the 8 clock prescaler
 #define F_CPU 1200000UL
 
 #include <avr/io.h>
@@ -5,21 +7,20 @@
 
 int main (void)
 {
-    DDRB = 0b11111111;
-//    DDRC = 0b11111111;
-//    DDRD = 0b11111111;
+    DDRB  = 0xff;
+    // initialize bit high
+    PORTB |= _BV(PORTB3);
 
     while(1)
     {
-		PORTB = 0b11110111;
-//		PORTC = 0b11111111;
-//		PORTD = 0b11111111;
-        _delay_ms(50);
-		PORTB = 0b00001000;
-//		PORTC = 0b00000011;
-//		PORTD = 0b00000000;
+		//PORTB = 0xff;
+		// toggle pin (^) is the XOR operator
+		PORTB ^= _BV(PORTB3);
+        _delay_ms(500);
+		//PORTB = 0x00;
+		// toggle pin agin
+		PORTB ^= _BV(PORTB3);
         _delay_ms(50);
     }
-    return(0);
 }
 
