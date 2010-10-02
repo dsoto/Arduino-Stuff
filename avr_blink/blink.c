@@ -7,7 +7,7 @@
 #include <util/delay.h>
 
 int i;
-int duration = 50;
+int volatile duration = 1000;
 int state = 1   ;
 
 int main ()
@@ -28,40 +28,39 @@ int main ()
     PCMSK |= _BV(PCINT4);
 
     // loop while interrupts run the show
-    while(1);
-}
-
-void blink(int duration)
-{
-    for (i=0;i<10;i++)
+    while(1)
     {
 		// toggle pin (^) is the XOR operator
 		PORTB ^= _BV(PORTB3);
         _delay_ms(duration);
     }
+
 }
 
 ISR (PCINT0_vect) {
+    // simple debounce routine
     // read button
     int button1 = PINB & _BV(DDB4);
     // pause 50ms
-    //_delay_ms(50);
+    _delay_ms(50);
     // read button
     int button2 = PINB & _BV(DDB4);
-    // if readings are equal run code
-    if ((button1 == button2) && (button1==0)) {}
-    else {return;}
+    // if readings are equal and low, run code
+    if ((button1 == button2) && (button1==0))
+    {}
+    else
+    {return;}
 
     switch (state)
     {
         case 0:
-            blink(25);
+            duration = 25;
             break;
         case 1:
-            blink(200);
+            duration = 50;
             break;
         case 2:
-            blink(75);
+            duration = 75;
             break;
         default:
             break;
