@@ -7,6 +7,8 @@
 #include <util/delay.h>
 
 int i;
+int duration = 50;
+int state = 1   ;
 
 int main ()
 {
@@ -29,11 +31,42 @@ int main ()
     while(1);
 }
 
-ISR (PCINT0_vect) {
-    for (i=1;i<20;i++)
+void blink(int duration)
+{
+    for (i=0;i<10;i++)
     {
 		// toggle pin (^) is the XOR operator
 		PORTB ^= _BV(PORTB3);
-        _delay_ms(50);
+        _delay_ms(duration);
     }
+}
+
+ISR (PCINT0_vect) {
+    // read button
+    int button1 = PINB & _BV(DDB4);
+    // pause 50ms
+    //_delay_ms(50);
+    // read button
+    int button2 = PINB & _BV(DDB4);
+    // if readings are equal run code
+    if ((button1 == button2) && (button1==0)) {}
+    else {return;}
+
+    switch (state)
+    {
+        case 0:
+            blink(25);
+            break;
+        case 1:
+            blink(200);
+            break;
+        case 2:
+            blink(75);
+            break;
+        default:
+            break;
+    }
+    state ++;
+    if (state==3) state = 0;
+
 }
