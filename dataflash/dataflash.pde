@@ -33,20 +33,32 @@ void loop() {
         if (response == 'r') {
             response = 'a';
             // read out 8 bytes of flash
-            for (uint16_t j=0; j<256; j+=4) {
+            for (uint16_t j=0; j<128; j+=4) {
                 readValue = readBuffer(j);
-                Serial.print(readValue, HEX);       
+                printByteToSerial(readValue);
+                //Serial.print(readValue, HEX);       
                 readValue = readBuffer(j+1);
-                Serial.print(readValue, HEX);       
+                printByteToSerial(readValue);
+                //Serial.print(readValue, HEX);       
                 readValue = readBuffer(j+2);
-                Serial.print(readValue, HEX);       
+                printByteToSerial(readValue);
+                //Serial.print(readValue, HEX);       
                 readValue = readBuffer(j+3);
-                Serial.println(readValue, HEX);       
+                printByteToSerial(readValue);
+                //Serial.print(readValue, HEX);
+                Serial.println();
             }
+            delay(10000);
         }        
-        delay(4000);
+        delay(1000);
     }      
-    delay(10000);
+}
+
+void printByteToSerial(uint8_t val) {
+    uint8_t lowNibble = 0x0F & val;
+    uint8_t highNibble = (0xF0 & val) >> 4;
+    Serial.print(highNibble, HEX);
+    Serial.print(lowNibble, HEX);
 }
 
 void bufferErase(){
