@@ -1,9 +1,13 @@
 #include <SPI.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 const int slaveSelectPin = 10;
 uint8_t readValue;
 char response;
 uint32_t timeSample;
+uint8_t countStart = 0xFFF0;
+uint16_t address = 0x0000;
 
 void setup() {
     pinMode (slaveSelectPin, OUTPUT);
@@ -12,36 +16,36 @@ void setup() {
     SPI.setDataMode(SPI_MODE3);
     Serial.begin(9600);
     bufferErase();    
+    
+    // set up interrupt timer
+  TCCR1A = 0;
+  TCCR1B = (1 << CS12) | (0 << CS11) | (1 << CS10);
+  TIMSK1 = 1 << TOIE1;
+  TCNT1 = countStart;
+  sei();
+
 }
 
 void loop() {
-    Serial.println("top of loop()");
-    for (uint16_t i=0; i<128; i+=4) { 
-        timeSample = millis();
-    
-        Serial.print("write val: ");
-        Serial.println(timeSample, HEX);
-        
-        writeBuffer(i,   lowByte(timeSample >> 24));
-        writeBuffer(i+1, lowByte(timeSample >> 16));
-        writeBuffer(i+2, lowByte(timeSample >>  8));
-        writeBuffer(i+3, lowByte(timeSample >>  0));
+//    Serial.println("top of loop()");
+//    for (uint16_t i=0; i<128; i+=4) { 
                 
         if (Serial.available()) {
             response = Serial.read();
         }
         if (response == 'r') {
             printBufferToSerial();
-            delay(10000);
+            //delay(10000);
         }        
         delay(1000);
-    }      
+//    }      
 }
 
 void printBufferToSerial() {
     response = 'a';
     // read out 8 bytes of flash
     for (uint16_t j=0; j<128; j+=4) {
+        delay(100);
         // fixme: do this with a loop
         readValue = readBuffer(j);
         printByteToSerial(readValue);
@@ -116,3 +120,18 @@ byte readBuffer(uint8_t address) {
 // store millis()
 // write 16 bytes to buffer
 // increment address pointer
+ISR (TIMER1_OVF_vect) {
+        timeSample = millis();
+    
+        Serial.print("write val: ");
+        Serial.println(timeSample, HEX);
+        
+        writeBuffer(address,   lowByte(timeSample >> 24));
+        writeBuffer(address+1, lowByte(timeSample >> 16));
+        writeBuffer(address+2, lowByte(timeSample >>  8));
+        writeBuffer(address+3, lowByte(timeSample >>  0));
+
+        address += 4;
+    // reset timer
+    TCNT1 = countStart;
+}
