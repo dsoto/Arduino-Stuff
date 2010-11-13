@@ -17,13 +17,14 @@ void setup() {
 void loop() {
     bufferErase();
     Serial.println("top of loop()");
-    for (uint16_t i=0; i<256; i++) { 
+    for (uint16_t i=0; i<256; i+=2) { 
         timeSample = millis();
     
         Serial.print("write val: ");
         Serial.println(timeSample, HEX);
         
-        writeBuffer(i, timeSample);
+        writeBuffer(i, highByte(timeSample));
+        writeBuffer(i+1, lowByte(timeSample));
         
         if (Serial.available()) {
             response = Serial.read();
@@ -31,8 +32,10 @@ void loop() {
         if (response == 'r') {
             response = 'a';
             // read out 8 bytes of flash
-            for (uint16_t j=0; j<16; j++) {
-                readValue = readBuffer(lowByte(j));
+            for (uint16_t j=0; j<16; j+=2) {
+                readValue = readBuffer(j);
+                Serial.print(readValue, HEX);       
+                readValue = readBuffer(j+1);
                 Serial.println(readValue, HEX);       
             }
         }        
