@@ -2,7 +2,8 @@
 
 const int slaveSelectPin = 10;
 uint8_t readValue;
-
+char response;
+uint16_t timeSample;
 
 void setup() {
     pinMode (slaveSelectPin, OUTPUT);
@@ -16,28 +17,33 @@ void setup() {
 void loop() {
     bufferErase();
     Serial.println("top of loop()");
-    for (uint8_t i=0; i<256; i++) {  
+    for (uint16_t i=0; i<256; i++) { 
+        timeSample = millis();
     
         Serial.print("write val: ");
-        Serial.println(i);
+        Serial.println(timeSample, HEX);
         
-        writeBuffer(i, i);
+        writeBuffer(i, timeSample);
         
-        // read out 8 bytes of flash
-        for (uint16_t j=0; j<16; j++) {
-               readValue = readBuffer(lowByte(j));
-          Serial.println(readValue, DEC);       
+        if (Serial.available()) {
+            response = Serial.read();
         }
-        
+        if (response == 'r') {
+            response = 'a';
+            // read out 8 bytes of flash
+            for (uint16_t j=0; j<16; j++) {
+                readValue = readBuffer(lowByte(j));
+                Serial.println(readValue, HEX);       
+            }
+        }        
         delay(2000);
     }      
-            delay(10000);
-
+    delay(10000);
 }
 
 void bufferErase(){
     for (uint16_t i=0; i<512; i++) {
-        writeBuffer(i,0x00);
+        writeBuffer(i, 0x00);
     }
 }
 
