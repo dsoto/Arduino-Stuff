@@ -3,6 +3,7 @@
 const int slaveSelectPin = 10;
 int readValue;
 
+
 void setup() {
   pinMode (slaveSelectPin, OUTPUT);
   SPI.begin(); 
@@ -11,19 +12,35 @@ void setup() {
   Serial.begin(9600);
 }
 
-/* 
-   first test is to write a series of values
-   to the zero address in the first buffer
-   and them read them out to verify.
-*/
-   
+
 void loop() {
+  bufferErase();
   Serial.println("top of loop()");
   for (int i=0; i<256; i++) {  
 
       Serial.print("write val: ");
       Serial.println(i);
   
+      writeBuffer(i, i);
+      
+      // read out 8 bytes of flash
+      for (int j=0; j<16; j++) {
+               readValue = readBuffer(j);
+          Serial.println(readValue);       
+      }
+      
+      delay(2000);
+      
+  }      
+}
+
+void bufferErase(){
+  for (int i=0; i<256; i++) {
+    writeBuffer(i,0x00);
+  }
+}
+
+void writeBuffer(byte address, byte value) {
       // set chip select low
       digitalWrite(slaveSelectPin, LOW);
       
@@ -33,14 +50,16 @@ void loop() {
       // write out address
       SPI.transfer(0x00);
       SPI.transfer(0x00);
-      SPI.transfer(0x00);
+      SPI.transfer(address);
       
       // write out data
-      SPI.transfer(i);
+      SPI.transfer(value);
       
       // unselect chip
-      digitalWrite(slaveSelectPin, HIGH);
-            
+      digitalWrite(slaveSelectPin, HIGH);  
+}
+
+byte readBuffer(byte address){
       // set chip select low
       digitalWrite(slaveSelectPin, LOW);
 
@@ -50,7 +69,8 @@ void loop() {
       // write out address
       SPI.transfer(0x00);
       SPI.transfer(0x00);
-      SPI.transfer(0x00);
+      //SPI.transfer(0x00);
+      SPI.transfer(address);
       
       // don't care byte to initiate read
       SPI.transfer(0x00);
@@ -60,10 +80,7 @@ void loop() {
       // unselect chip
       digitalWrite(slaveSelectPin, HIGH);
       
-      Serial.print("read val: ");
-      Serial.println(readValue);
-      delay(1000);
-      
-  }      
+      return readValue;
+  
 }
 
