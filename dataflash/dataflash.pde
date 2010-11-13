@@ -11,12 +11,12 @@ void setup() {
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE3);
     Serial.begin(9600);
+    bufferErase();    
 }
 
 void loop() {
-    bufferErase();
     Serial.println("top of loop()");
-    for (uint16_t i=0; i<256; i+=4) { 
+    for (uint16_t i=0; i<128; i+=4) { 
         timeSample = millis();
     
         Serial.print("write val: ");
@@ -31,27 +31,28 @@ void loop() {
             response = Serial.read();
         }
         if (response == 'r') {
-            response = 'a';
-            // read out 8 bytes of flash
-            for (uint16_t j=0; j<128; j+=4) {
-                readValue = readBuffer(j);
-                printByteToSerial(readValue);
-                //Serial.print(readValue, HEX);       
-                readValue = readBuffer(j+1);
-                printByteToSerial(readValue);
-                //Serial.print(readValue, HEX);       
-                readValue = readBuffer(j+2);
-                printByteToSerial(readValue);
-                //Serial.print(readValue, HEX);       
-                readValue = readBuffer(j+3);
-                printByteToSerial(readValue);
-                //Serial.print(readValue, HEX);
-                Serial.println();
-            }
+            printBufferToSerial();
             delay(10000);
         }        
         delay(1000);
     }      
+}
+
+void printBufferToSerial() {
+    response = 'a';
+    // read out 8 bytes of flash
+    for (uint16_t j=0; j<128; j+=4) {
+        // fixme: do this with a loop
+        readValue = readBuffer(j);
+        printByteToSerial(readValue);
+        readValue = readBuffer(j+1);
+        printByteToSerial(readValue);
+        readValue = readBuffer(j+2);
+        printByteToSerial(readValue);
+        readValue = readBuffer(j+3);
+        printByteToSerial(readValue);
+        Serial.println();
+    }
 }
 
 void printByteToSerial(uint8_t val) {
@@ -61,7 +62,7 @@ void printByteToSerial(uint8_t val) {
     Serial.print(lowNibble, HEX);
 }
 
-void bufferErase(){
+void bufferErase() {
     for (uint16_t i=0; i<512; i++) {
         writeBuffer(i, 0x00);
     }
@@ -86,7 +87,7 @@ void writeBuffer(uint8_t address, uint8_t value) {
     digitalWrite(slaveSelectPin, HIGH);  
 }
 
-byte readBuffer(uint8_t address){
+byte readBuffer(uint8_t address) {
     // set chip select low
     digitalWrite(slaveSelectPin, LOW);
     
