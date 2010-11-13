@@ -3,7 +3,7 @@
 const int slaveSelectPin = 10;
 uint8_t readValue;
 char response;
-uint16_t timeSample;
+uint32_t timeSample;
 
 void setup() {
     pinMode (slaveSelectPin, OUTPUT);
@@ -13,33 +13,38 @@ void setup() {
     Serial.begin(9600);
 }
 
-
 void loop() {
     bufferErase();
     Serial.println("top of loop()");
-    for (uint16_t i=0; i<256; i+=2) { 
+    for (uint16_t i=0; i<256; i+=4) { 
         timeSample = millis();
     
         Serial.print("write val: ");
         Serial.println(timeSample, HEX);
         
-        writeBuffer(i, highByte(timeSample));
-        writeBuffer(i+1, lowByte(timeSample));
-        
+        writeBuffer(i,   lowByte(timeSample >> 24));
+        writeBuffer(i+1, lowByte(timeSample >> 16));
+        writeBuffer(i+2, lowByte(timeSample >>  8));
+        writeBuffer(i+3, lowByte(timeSample >>  0));
+                
         if (Serial.available()) {
             response = Serial.read();
         }
         if (response == 'r') {
             response = 'a';
             // read out 8 bytes of flash
-            for (uint16_t j=0; j<16; j+=2) {
+            for (uint16_t j=0; j<256; j+=4) {
                 readValue = readBuffer(j);
                 Serial.print(readValue, HEX);       
                 readValue = readBuffer(j+1);
+                Serial.print(readValue, HEX);       
+                readValue = readBuffer(j+2);
+                Serial.print(readValue, HEX);       
+                readValue = readBuffer(j+3);
                 Serial.println(readValue, HEX);       
             }
         }        
-        delay(2000);
+        delay(4000);
     }      
     delay(10000);
 }
@@ -94,3 +99,7 @@ byte readBuffer(uint8_t address){
     
 }
 
+// ISR routine
+// store millis()
+// write 16 bytes to buffer
+// increment address pointer
