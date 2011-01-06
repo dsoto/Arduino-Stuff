@@ -17,6 +17,13 @@ void modem(String commandString) {
     Serial2.println();
 }
 
+String getDestination(String commandString) {
+    int equalsIndex = commandString.indexOf("cmp=");
+    int ampersandIndex = commandString.indexOf("&");
+    String destination = commandString.substring(equalsIndex + 4, ampersandIndex);
+    return destination;
+}
+
 String readSerial2() {
     char incomingByte;    
     String commandString = "";
@@ -41,11 +48,8 @@ void loop() {
 
     String commandString = readSerial2();    
     // send data only when you receive data:
-    
-    int equalsIndex = commandString.indexOf("cmp=");
-    int ampersandIndex = commandString.indexOf("&");
-    
-    String destination = commandString.substring(equalsIndex + 4, ampersandIndex);
+
+    String destination = getDestination(commandString);
 
     chooseDestination(destination, commandString);    
 
