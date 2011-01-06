@@ -19,6 +19,14 @@ void modem(String commandString) {
     Serial2.println();
 }
 
+String getValueForKey(String key, String commandString) {
+    int keyIndex = commandString.indexOf(key);
+    int valIndex = keyIndex + key.length() + 1;
+    int ampersandIndex = commandString.indexOf("&",valIndex);
+    String val = commandString.substring(valIndex, ampersandIndex);
+    return val;
+}
+
 String getDestination(String commandString) {
     int equalsIndex = commandString.indexOf("cmp=");
     int ampersandIndex = commandString.indexOf("&");
@@ -46,16 +54,24 @@ void chooseDestination(String destination, String commandString) {
 }
 
 void loop() {
+
+    String commandString;
+    String destination;
+    
     Serial1.print("cmp=mdm&str=command_string");
-
-    String commandString = readSerial2();    
-    // send data only when you receive data:
-
-    String destination = getDestination(commandString);
-
+    commandString = readSerial2();    
+    destination = getValueForKey("cmp", commandString);
     chooseDestination(destination, commandString);    
 
-
-    
     delay(1000);
+    Serial1.print(millis());
+    
+    Serial1.print("cmp=mtr&str=command_string");
+    commandString = readSerial2();    
+    destination = getValueForKey("cmp", commandString);
+    chooseDestination(destination, commandString);    
+
+    delay(1000);
+    Serial1.print(millis());
+    
 }
