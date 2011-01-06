@@ -8,11 +8,13 @@ void setup(){
 void meter(String commandString) {
     Serial2.println("destination = meter");
     Serial2.println(commandString);
+    Serial2.println();
 }
 
 void modem(String commandString) {
     Serial2.println("destination = modem");
     Serial2.println(commandString);
+    Serial2.println();
 }
 
 String readSerial2() {
@@ -25,6 +27,15 @@ String readSerial2() {
     return commandString;
 }
 
+void chooseDestination(String destination, String commandString) {
+    if (destination == "mtr") {
+        meter(commandString);
+    }
+    else if (destination == "mdm") {
+        modem(commandString);
+    }
+}
+
 void loop() {
     Serial1.print("cmp=mdm&str=command_string");
 
@@ -35,13 +46,9 @@ void loop() {
     int ampersandIndex = commandString.indexOf("&");
     
     String destination = commandString.substring(equalsIndex + 4, ampersandIndex);
-    
-    if (destination == "mtr") {
-        meter(commandString);
-    }
-    else if (destination == "mdm") {
-        modem(commandString);
-    }
+
+    chooseDestination(destination, commandString);    
+
 
     
     delay(1000);
