@@ -35,10 +35,23 @@ String getDestination(String commandString) {
 }
 
 String readSerial2() {
+    char incomingByte = ';';    
+    String commandString = "";
+    while ((Serial2.available() > 0) || (incomingByte != ';')) {
+        incomingByte = Serial2.read();
+        if (incomingByte != -1) {        
+            commandString += incomingByte;
+        }
+    }    
+    return commandString;
+}
+
+String readSerial() {
     char incomingByte;    
     String commandString = "";
-    while (Serial2.available() > 0) {
-        incomingByte = Serial2.read();
+    while (Serial.available() > 0) {
+        incomingByte = Serial.read();
+        Serial2.println(incomingByte);
         commandString += incomingByte;
     }    
     return commandString;
@@ -57,21 +70,13 @@ void loop() {
 
     String commandString;
     String destination;
-    
-    Serial1.print("cmp=mdm&str=command_string");
-    commandString = readSerial2();    
+
+    commandString = readSerial2();
     destination = getValueForKey("cmp", commandString);
     chooseDestination(destination, commandString);    
 
     delay(1000);
-    Serial1.print(millis());
+    Serial2.println(millis());
     
-    Serial1.print("cmp=mtr&str=command_string");
-    commandString = readSerial2();    
-    destination = getValueForKey("cmp", commandString);
-    chooseDestination(destination, commandString);    
-
-    delay(1000);
-    Serial1.print(millis());
     
 }
