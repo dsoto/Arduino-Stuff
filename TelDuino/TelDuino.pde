@@ -1,8 +1,10 @@
+#define BAUD_RATE 115200
+
 void setup(){
-    Serial.begin(115200);
-    Serial1.begin(115200);
-    Serial2.begin(115200);
-    Serial3.begin(115200);
+    Serial.begin(BAUD_RATE);
+    Serial1.begin(BAUD_RATE);
+    Serial2.begin(BAUD_RATE);
+    Serial3.begin(BAUD_RATE);
 }
 
 void meter(String commandString) {
