@@ -62,12 +62,17 @@ String readSheevaPort() {
     while ((sheevaPort.available() > 0) || ((incomingByte != ';') && (incomingByte != '\n'))) {
         incomingByte = sheevaPort.read();
         if (incomingByte != -1) {      
-            if (verbose > 0) {
+            if (verbose > 1) {
                 debugPort.print(incomingByte);
             }
             commandString += incomingByte;
         }
-    }    
+        if (incomingByte == ';') {
+            commandString = commandString.substring(0, commandString.length() - 1);
+            break;
+        }
+    }   
+    commandString = commandString.trim();
     return commandString;
 }
 
