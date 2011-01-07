@@ -18,12 +18,19 @@ void meter(String commandString) {
 }
 
 void modem(String commandString) {
-    debugPort.println("destination = modem");
-    debugPort.println(commandString);
-    debugPort.println();
-    String modemString = getValueForKey("str", commandString);
-    debugPort.println(modemString);
-    telitPort.println(modemString);
+    debugPort.println("entered void modem()");
+    String text = getValueForKey("text", commandString);
+    String phone = getValueForKey("phone", commandString);
+    
+    debugPort.print("phone number - ");
+    debugPort.println(phone);
+    debugPort.print("sms text - ");
+    debugPort.println(text);
+
+    // handle modem string here
+    telitPort.print("AT+CMGS=");
+    telitPort.print(phone);
+    telitPort.print("\r\n");
 
 }
 
