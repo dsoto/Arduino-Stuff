@@ -103,6 +103,18 @@ String readSheevaPort() {
     return commandString;
 }
 
+String readTelitPort() {
+    char incomingByte = '\n';
+    String commandString = "";
+    while ((telitPort.available() > 0) || (incomingByte != '\n')) {
+        incomingByte = telitPort.read();
+        if (incomingByte != -1) {      
+            commandString += incomingByte;
+        }
+    }
+    return commandString;
+}
+
 void chooseDestination(String destination, String commandString) {
     if (destination == "mtr") {
         meter(commandString);
@@ -114,7 +126,7 @@ void chooseDestination(String destination, String commandString) {
 
 void loop() {
 
-    if (verbose > 0) {
+    if (verbose > 1) {
         debugPort.println("top of loop()");
         debugPort.println(millis());
     }
@@ -126,7 +138,20 @@ void loop() {
     destination = getValueForKey("cmp", commandString);
     chooseDestination(destination, commandString);    
 
-    delay(1000);
+    String modemString = "";
+    modemString = readTelitPort();
+    modemString = modemString.trim();
+    if (modemString.length() != 0) {
+        String responseString = "";
+        responseString += "cmp=mdm&text=";
+        responseString += '"';
+        responseString += modemString;
+        responseString += '"';
+        sheevaPort.println(responseString);
+        
+        debugPort.println("string received from telit");
+        debugPort.println(modemString);
+    }
     
     
 }
