@@ -12,9 +12,17 @@ void setup(){
 }
 
 void meter(String commandString) {
-    debugPort.println("destination = meter");
-    debugPort.println(commandString);
     debugPort.println();
+    debugPort.println("entered void meter()");
+    String job = getValueForKey("job", commandString);
+    String cid = getValueForKey("cid", commandString);
+    
+    debugPort.print("executing job type - ");
+    debugPort.println(job);
+    debugPort.print("on circuit id - ");
+    debugPort.println(cid);
+    
+    delay(1000);
 }
 
 void modem(String commandString) {
@@ -35,6 +43,8 @@ void modem(String commandString) {
     telitPort.print("\r\n");
     
     sheevaPort.println("fake modem response");
+    
+    delay(1000);
 
 }
 
