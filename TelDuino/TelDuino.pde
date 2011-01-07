@@ -1,4 +1,8 @@
 #define BAUD_RATE 115200
+#define telitPort Serial3
+#define sheevaPort Serial2
+#define debugPort Serial1
+#define verbose 1
 
 void setup(){
     Serial.begin(BAUD_RATE);
@@ -8,18 +12,25 @@ void setup(){
 }
 
 void meter(String commandString) {
-    Serial2.println("destination = meter");
-    Serial2.println(commandString);
-    Serial2.println();
+    debugPort.println("destination = meter");
+    debugPort.println(commandString);
+    debugPort.println();
 }
 
 void modem(String commandString) {
-    Serial2.println("destination = modem");
-    Serial2.println(commandString);
-    Serial2.println();
+    debugPort.println("destination = modem");
+    debugPort.println(commandString);
+    debugPort.println();
+    String modemString = getValueForKey("str", commandString);
+    debugPort.println(modemString);
+    telitPort.println(modemString);
+
 }
 
 String getValueForKey(String key, String commandString) {
+    // this doesn't handle the case of the end of the string where
+    // there is no trailing &
+    // also doesn't handle the case of a modem string which has & in the string
     int keyIndex = commandString.indexOf(key);
     int valIndex = keyIndex + key.length() + 1;
     int ampersandIndex = commandString.indexOf("&",valIndex);
@@ -34,25 +45,14 @@ String getDestination(String commandString) {
     return destination;
 }
 
-String readSerial2() {
+String readSheevaPort() {
     char incomingByte = ';';    
     String commandString = "";
-    while ((Serial2.available() > 0) || (incomingByte != ';')) {
-        incomingByte = Serial2.read();
+    while ((sheevaPort.available() > 0) || (incomingByte != ';')) {
+        incomingByte = sheevaPort.read();
         if (incomingByte != -1) {        
             commandString += incomingByte;
         }
-    }    
-    return commandString;
-}
-
-String readSerial() {
-    char incomingByte;    
-    String commandString = "";
-    while (Serial.available() > 0) {
-        incomingByte = Serial.read();
-        Serial2.println(incomingByte);
-        commandString += incomingByte;
     }    
     return commandString;
 }
@@ -68,15 +68,19 @@ void chooseDestination(String destination, String commandString) {
 
 void loop() {
 
+    if (verbose > 0) {
+        debugPort.println("top of loop()");
+        debugPort.println(millis());
+    }
+    
     String commandString;
     String destination;
 
-    commandString = readSerial2();
+    commandString = readSheevaPort();
     destination = getValueForKey("cmp", commandString);
     chooseDestination(destination, commandString);    
 
     delay(1000);
-    Serial2.println(millis());
     
     
 }
