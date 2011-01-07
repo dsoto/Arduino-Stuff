@@ -52,6 +52,10 @@ String getValueForKey(String key, String commandString) {
     int keyIndex = commandString.indexOf(key);
     int valIndex = keyIndex + key.length() + 1;
     int ampersandIndex = commandString.indexOf("&",valIndex);
+    // if ampersand not found, go until end of string
+    if (ampersandIndex == -1) {
+        ampersandIndex = commandString.length();
+    }
     String val = commandString.substring(valIndex, ampersandIndex);
     return val;
 }
