@@ -31,6 +31,8 @@ void modem(String commandString) {
     telitPort.print("AT+CMGS=");
     telitPort.print(phone);
     telitPort.print("\r\n");
+    
+    sheevaPort.println("fake modem response");
 
 }
 
