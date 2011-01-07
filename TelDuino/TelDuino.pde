@@ -19,21 +19,30 @@ void meter(String commandString) {
 
 void modem(String commandString) {
     debugPort.println("entered void modem()");
-    String text = getValueForKey("text", commandString);
+    String smsText = getSMSText(commandString);
     String phone = getValueForKey("phone", commandString);
     
     debugPort.print("phone number - ");
     debugPort.println(phone);
     debugPort.print("sms text - ");
-    debugPort.println(text);
+    debugPort.println(smsText);
 
     // handle modem string here
     telitPort.print("AT+CMGS=");
     telitPort.print(phone);
     telitPort.print("\r\n");
+    telitPort.print(smsText);
+    telitPort.print("\r\n");
     
     sheevaPort.println("fake modem response");
 
+}
+
+String getSMSText(String commandString) {
+    int firstQuoteIndex = commandString.indexOf('"');
+    int secondQuoteIndex = commandString.indexOf('"', firstQuoteIndex + 1);
+    String smsText = commandString.substring(firstQuoteIndex + 1, secondQuoteIndex);
+    return smsText;
 }
 
 String getValueForKey(String key, String commandString) {
