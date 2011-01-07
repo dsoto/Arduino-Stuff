@@ -9,31 +9,44 @@ void setup(){
     Serial1.begin(BAUD_RATE);
     Serial2.begin(BAUD_RATE);
     Serial3.begin(BAUD_RATE);
+    
+    debugPort.println();
+    debugPort.println("starting telduino service");
+    debugPort.println();
 }
 
 void meter(String commandString) {
-    debugPort.println();
-    debugPort.println("entered void meter()");
     String job = getValueForKey("job", commandString);
     String cid = getValueForKey("cid", commandString);
+
+    if (verbose > 0) {
+        debugPort.println();
+        debugPort.println("entered void meter()");
+        debugPort.print("executing job type - ");
+        debugPort.println(job);
+        debugPort.print("on circuit id - ");
+        debugPort.println(cid);
+        debugPort.println();
+    }
     
-    debugPort.print("executing job type - ");
-    debugPort.println(job);
-    debugPort.print("on circuit id - ");
-    debugPort.println(cid);
+    sheevaPort.println("fake meter response");
     
-    delay(1000);
+    //delay(1000);
 }
 
 void modem(String commandString) {
-    debugPort.println("entered void modem()");
     String smsText = getSMSText(commandString);
     String phone = getValueForKey("phone", commandString);
-    
-    debugPort.print("phone number - ");
-    debugPort.println(phone);
-    debugPort.print("sms text - ");
-    debugPort.println(smsText);
+
+    if (verbose > 0) {
+        debugPort.println();
+        debugPort.println("entered void modem()");
+        debugPort.print("phone number - ");
+        debugPort.println(phone);
+        debugPort.print("sms text - ");
+        debugPort.println(smsText);
+        debugPort.println();
+    }
 
     // handle modem string here
     telitPort.print("AT+CMGS=");
@@ -44,7 +57,7 @@ void modem(String commandString) {
     
     sheevaPort.println("fake modem response");
     
-    delay(1000);
+    //delay(1000);
 
 }
 
