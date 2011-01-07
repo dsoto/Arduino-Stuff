@@ -48,9 +48,12 @@ String getValueForKey(String key, String commandString) {
 String readSheevaPort() {
     char incomingByte = ';';    
     String commandString = "";
-    while ((sheevaPort.available() > 0) || (incomingByte != ';')) {
+    while ((sheevaPort.available() > 0) || ((incomingByte != ';') && (incomingByte != '\n'))) {
         incomingByte = sheevaPort.read();
-        if (incomingByte != -1) {        
+        if (incomingByte != -1) {      
+            if (verbose > 0) {
+                debugPort.print(incomingByte);
+            }
             commandString += incomingByte;
         }
     }    
