@@ -38,13 +38,6 @@ String getValueForKey(String key, String commandString) {
     return val;
 }
 
-String getDestination(String commandString) {
-    int equalsIndex = commandString.indexOf("cmp=");
-    int ampersandIndex = commandString.indexOf("&");
-    String destination = commandString.substring(equalsIndex + 4, ampersandIndex);
-    return destination;
-}
-
 String readSheevaPort() {
     char incomingByte = ';';    
     String commandString = "";
